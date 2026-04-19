@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MathAI">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3B5BFC">
+<title>MathAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#fdf8f2;
+  --white:#ffffff;
+  --blue:#3b5bfc;
+  --blue-lt:#eef0ff;
+  --blue-md:#c5ccff;
+  --green:#16c784;
+  --green-lt:#e6faf3;
+  --red:#ff5c5c;
+  --red-lt:#fff0f0;
+  --amber:#ffb020;
+  --amber-lt:#fff8e6;
+  --purple:#7c3aed;
+  --purple-lt:#f3eeff;
+  --ink:#1c1c2e;
+  --ink2:#5c5c7a;
+  --ink3:#9b9bb4;
+  --border:#ece8f5;
+  --shadow:0 2px 12px rgba(59,91,252,.07);
+  --shadow-md:0 4px 24px rgba(59,91,252,.12);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  font-size:14px;
+  line-height:1.6;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── 앱 레이아웃 ── */
+.app{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+
+/* ── 상단 헤더 ── */
+.hdr{
+  background:var(--white);
+  border-bottom:1.5px solid var(--border);
+  padding:0 20px;
+  height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  box-shadow:var(--shadow);
+  z-index:50;
+}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{
+  width:32px;height:32px;
+  background:var(--blue);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:14px;
+  color:white;letter-spacing:-1px;
+}
+.logo-txt{font-family:'Nunito',sans-serif;font-weight:900;font-size:19px;color:var(--ink);letter-spacing:-0.5px}
+
+.hdr-right{display:flex;align-items:center;gap:8px}
+.api-dot{width:7px;height:7px;border-radius:50%;background:var(--ink3);transition:background .3s}
+.api-dot.on{background:var(--green)}
+.profile-btn{
+  width:32px;height:32px;
+  border-radius:50%;
+  background:var(--blue-lt);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  color:var(--blue);font-weight:900;
+  font-family:'Nunito',sans-serif;
+  transition:all .15s;
+}
+.profile-btn:active{background:var(--blue-md)}
+
+/* ── 스크롤 영역 ── */
+.content{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+}
+
+.page{display:none;padding:20px 16px 16px;animation:fadeUp .2s ease}
+.page.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── 하단 탭바 ── */
+.bottom-nav{
+  background:var(--white);
+  border-top:1.5px solid var(--border);
+  display:flex;
+  flex-shrink:0;
+  box-shadow:0 -2px 12px rgba(59,91,252,.06);
+}
+.bnav-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 4px 10px;
+  cursor:pointer;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+  gap:3px;
+  min-height:56px;
+  position:relative;
+}
+.bnav-item:active{background:var(--blue-lt)}
+.bnav-ico{
+  font-size:20px;
+  line-height:1;
+  transition:transform .2s;
+}
+.bnav-lbl{
+  font-size:10px;
+  font-weight:600;
+  color:var(--ink3);
+  letter-spacing:-0.2px;
+}
+.bnav-item.on .bnav-lbl{color:var(--blue);font-weight:700}
+.bnav-item.on .bnav-ico{transform:scale(1.1)}
+.bnav-dot{
+  position:absolute;
+  top:8px;right:calc(50% - 14px);
+  width:6px;height:6px;
+  background:var(--red);
+  border-radius:50%;
+  display:none;
+}
+.bnav-dot.show{display:block}
+
+/* ── 홈 탭 ── */
+.home-greeting{
+  background:linear-gradient(135deg,#3b5bfc 0%,#7c3aed 100%);
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:20px;
+  color:white;
+  position:relative;
+  overflow:hidden;
+}
+.home-greeting::before{
+  content:'∑';
+  position:absolute;right:-10px;top:-10px;
+  font-size:100px;font-weight:900;
+  font-family:'Nunito',sans-serif;
+  opacity:.08;line-height:1;
+}
+.greet-name{font-size:13px;opacity:.75;margin-bottom:4px}
+.greet-title{font-size:20px;font-weight:900;font-family:'Nunito',sans-serif;line-height:1.3}
+.greet-sub{font-size:12px;opacity:.7;margin-top:6px}
+
+.today-stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.tstat{
+  background:rgba(255,255,255,.15);
+  border-radius:12px;
+  padding:12px 8px;
+  text-align:center;
+  backdrop-filter:blur(4px);
+}
+.tstat-v{font-size:20px;font-weight:900;font-family:'Nunito',sans-serif}
+.tstat-l{font-size:10px;opacity:.7;margin-top:2px}
+.tstat-v.streak-ico{font-size:17px;letter-spacing:-1px}
+
+.mission-line{
+  margin-top:14px;padding:12px 14px;
+  background:rgba(255,255,255,.2);
+  border-radius:14px;
+  font-size:13px;font-weight:700;
+  text-align:center;
+  border:1.5px solid rgba(255,255,255,.25);
+}
+.mission-line.done{background:rgba(22,199,132,.25);border-color:rgba(255,255,255,.35)}
+.mission-num{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;margin:0 2px}
+
+/* 90일 등급 그래프 */
+.grade-chart-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  padding:16px 14px 14px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.gchart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.gchart-title{font-size:14px;font-weight:700;color:var(--ink)}
+.gchart-sub{font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.gchart-svg-wrap{width:100%;height:150px;position:relative}
+.gchart-svg{width:100%;height:150px;display:block}
+.gchart-axis-lbl{
+  position:absolute;font-size:9px;font-weight:700;color:var(--ink3);
+  font-family:'Nunito',sans-serif;
+}
+.gchart-legend{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:10px;color:var(--ink3)}
+.gchart-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+
+/* 학부모 공유 카드 */
+.share-wrap{margin-bottom:20px}
+.share-card{
+  background:linear-gradient(145deg,#ffffff 0%,#f7f9ff 50%,#eef0ff 100%);
+  border:2px solid var(--blue-md);
+  border-radius:20px;
+  padding:22px 20px 18px;
+  text-align:center;
+  box-shadow:var(--shadow-md);
+  position:relative;
+  overflow:hidden;
+}
+.share-card::before{
+  content:'';position:absolute;right:-24px;top:-24px;
+  width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,91,252,.12) 0%,transparent 70%);
+}
+.share-brand{
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;
+  color:var(--blue);letter-spacing:.5px;margin-bottom:10px;
+}
+.share-name{
+  font-size:20px;font-weight:900;color:var(--ink);margin-bottom:14px;
+  position:relative;z-index:1;
+}
+.share-big-grade{
+  font-family:'Nunito',sans-serif;font-size:42px;font-weight:900;
+  line-height:1;color:var(--blue);
+  text-shadow:0 2px 0 rgba(59,91,252,.15);
+  margin-bottom:4px;position:relative;z-index:1;
+}
+.share-big-unit{font-size:18px;font-weight:800;vertical-align:8px;margin-left:2px}
+.share-delta{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:12px;padding:8px 14px;border-radius:999px;
+  font-size:13px;font-weight:700;
+  background:var(--white);border:1.5px solid var(--border);
+  color:var(--ink2);position:relative;z-index:1;
+}
+.share-delta.up{color:#0a6640;background:var(--green-lt);border-color:#a7f3d0}
+.share-delta.down{color:#991b1b;background:var(--red-lt);border-color:#fca5a5}
+.share-delta.flat{color:var(--ink3)}
+.share-streak{
+  margin-top:14px;font-size:15px;font-weight:800;color:var(--ink);
+  position:relative;z-index:1;
+}
+.share-foot{
+  margin-top:14px;font-size:10px;color:var(--ink3);letter-spacing:.3px;
+  position:relative;z-index:1;
+}
+.share-btns{display:flex;gap:8px;margin-top:14px}
+.share-btns .btn{flex:1;padding:11px 8px;font-size:12px;border-radius:14px}
+.share-btns .btn-kakao{
+  background:#fee500;color:#191919;border:none;
+  font-weight:800;box-shadow:0 3px 12px rgba(254,229,0,.45);
+}
+.share-btns .btn-kakao:active{opacity:.92;transform:scale(.97)}
+
+.slbl{
+  font-size:10px;font-weight:700;
+  color:var(--ink3);letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+/* 홈 빠른 실행 버튼 */
+.quick-btns{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:20px;
+}
+.qbtn{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  padding:18px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  cursor:pointer;transition:all .2s;
+  box-shadow:var(--shadow);
+  -webkit-tap-highlight-color:transparent;
+}
+.qbtn:active{transform:scale(.97);box-shadow:none}
+.qbtn-ico{font-size:26px}
+.qbtn-title{font-size:14px;font-weight:700;color:var(--ink)}
+.qbtn-sub{font-size:11px;color:var(--ink3);line-height:1.5}
+.qbtn.highlight{
+  background:var(--blue-lt);
+  border-color:var(--blue-md);
+}
+
+/* 최근 기록 */
+.hist-item{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.hist-item:active{background:var(--blue-lt)}
+.hist-ico{
+  width:38px;height:38px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.hist-info{flex:1;min-width:0}
+.hist-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-meta{font-size:11px;color:var(--ink3)}
+.hist-badge{
+  font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  flex-shrink:0;
+}
+
+/* ── 문제 탭 ── */
+.field-row{margin-bottom:14px}
+.fld-lbl{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px;display:block}
+select{
+  width:100%;
+  background:var(--cream);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  padding:12px 14px;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .15s;
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239b9bb4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+}
+select:focus{border-color:var(--blue);background-color:var(--white)}
+
+/* 난이도 선택 — 탭 버튼 방식 */
+.lv-tabs{display:flex;gap:8px;margin-bottom:18px}
+.lv-tab{
+  flex:1;
+  padding:10px 4px;
+  border-radius:12px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  font-size:12px;font-weight:700;
+  color:var(--ink3);
+  cursor:pointer;text-align:center;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.lv-tab:active{opacity:.7}
+.lv-tab.on{
+  background:var(--blue-lt);
+  border-color:var(--blue-md);
+  color:var(--blue);
+}
+.lv-tab span{display:block;font-size:16px;margin-bottom:2px}
+
+.card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  padding:18px 16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+
+/* 버튼 */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:13px 20px;
+  border-radius:24px;
+  font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  border:none;
+  font-family:'Noto Sans KR',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(.97)}
+.btn-full{width:100%}
+.btn-blue{
+  background:var(--blue);color:white;
+  box-shadow:0 4px 14px rgba(59,91,252,.3);
+}
+.btn-blue:active{background:#2d4de0}
+.btn-blue:disabled{background:var(--blue-md);box-shadow:none;cursor:not-allowed;transform:none}
+.btn-out{background:var(--white);color:var(--blue);border:1.5px solid var(--blue-md)}
+.btn-out:active{background:var(--blue-lt)}
+.btn-green{background:var(--green);color:white;box-shadow:0 4px 14px rgba(22,199,132,.25)}
+.btn-green:active{background:#12b070}
+.btn-row{display:flex;gap:8px;margin-top:14px}
+.btn-row .btn{flex:1}
+
+/* 배지 */
+.bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid}
+.bdg-a{background:#e6faf3;color:#0a6640;border-color:#a7f3d0}
+.bdg-b{background:var(--blue-lt);color:#1e3a8a;border-color:var(--blue-md)}
+.bdg-c{background:#fff8e6;color:#7c3004;border-color:#fde68a}
+.bdg-unit{background:var(--cream);color:var(--ink3);border-color:var(--border)}
+
+/* 문제 카드 */
+.pcard{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:16px;
+  padding:18px 16px;
+  margin-bottom:12px;
+  transition:all .2s;
+  box-shadow:var(--shadow);
+}
+.pcard.ok{border-color:#a7f3d0;background:#f0fdf9}
+.pcard.wrong{border-color:#fca5a5;background:#fff5f5}
+.pcard-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.pnum{
+  font-size:11px;font-weight:700;color:var(--ink3);
+  font-family:'Nunito',monospace;
+  background:var(--cream);padding:2px 8px;
+  border-radius:6px;border:1.5px solid var(--border);
+}
+.pbody{
+  font-size:15px;line-height:1.9;
+  color:var(--ink);white-space:pre-wrap;
+  font-family:'Noto Sans KR',sans-serif;
+  word-break:keep-all;
+}
+.pans{
+  margin-top:12px;padding:10px 14px;
+  background:var(--green-lt);border-radius:10px;
+  font-size:13px;color:#065f46;font-weight:700;
+  display:none;border:1.5px solid #a7f3d0;
+}
+.pans.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.pbtns{display:flex;gap:8px;margin-top:12px}
+.pbtns .btn{flex:1;padding:10px 8px;font-size:12px;border-radius:14px}
+.btn-check{background:var(--white);color:var(--ink2);border:1.5px solid var(--border)}
+.btn-ok{background:var(--green-lt);color:#065f46;border:1.5px solid #a7f3d0}
+.btn-no{background:var(--red-lt);color:#991b1b;border:1.5px solid #fca5a5}
+
+/* 로딩 */
+.lbar{height:5px;background:var(--blue-lt);border-radius:3px;overflow:hidden;margin:10px 0}
+.lfill{height:5px;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:3px;width:0%;transition:width .4s}
+.ltxt{font-size:12px;color:var(--ink3);margin-bottom:4px;font-weight:500}
+
+/* 업로드 존 */
+.upz{
+  border:2.5px dashed var(--blue-md);
+  border-radius:16px;padding:36px 16px;
+  text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--blue-lt);
+  -webkit-tap-highlight-color:transparent;
+}
+.upz:active{background:#dde3ff}
+.upz-ico{font-size:36px;margin-bottom:10px}
+.upz-txt{font-size:14px;color:var(--ink2);font-weight:700}
+.upz-sub{font-size:12px;color:var(--ink3);margin-top:4px}
+.prev-img{
+  max-width:100%;max-height:240px;
+  border-radius:12px;border:1.5px solid var(--border);
+  display:block;margin:12px auto 0;
+}
+
+/* 카메라 버튼 */
+.cam-btns{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:16px;
+}
+.cam-btn{
+  padding:14px 10px;border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--white);
+  display:flex;flex-direction:column;
+  align-items:center;gap:6px;
+  cursor:pointer;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:var(--shadow);
+}
+.cam-btn:active{background:var(--blue-lt);border-color:var(--blue-md)}
+.cam-btn-ico{font-size:28px}
+.cam-btn-lbl{font-size:12px;font-weight:700;color:var(--ink2)}
+.cam-btn-sub{font-size:10px;color:var(--ink3)}
+
+/* 리포트 */
+.rpt-hero{
+  background:linear-gradient(135deg,#3b5bfc 0%,#7c3aed 100%);
+  border-radius:20px;padding:22px 18px;
+  margin-bottom:16px;color:white;
+}
+.rpt-title{font-size:18px;font-weight:900;font-family:'Nunito',sans-serif;margin-bottom:3px}
+.rpt-sub{font-size:12px;opacity:.75}
+.rpt-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;margin-top:14px;
+}
+.rpt-stat{
+  background:rgba(255,255,255,.15);
+  border-radius:10px;padding:12px 8px;
+  text-align:center;
+}
+.rpt-v{font-size:18px;font-weight:900;font-family:'Nunito',sans-serif}
+.rpt-l{font-size:10px;opacity:.7;margin-top:2px}
+
+.aitem{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:12px;padding:12px 14px;
+  margin-bottom:8px;display:flex;gap:10px;
+  align-items:flex-start;box-shadow:var(--shadow);
+}
+.aico{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.atit{font-size:13px;font-weight:700;margin-bottom:2px}
+.adesc{font-size:12px;color:var(--ink3);line-height:1.7}
+
+.pb-wrap{margin:8px 0}
+.pb-lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;font-weight:500}
+.pb-bar{height:8px;background:var(--cream);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.pb-fill{height:8px;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
+.divider{height:1.5px;background:var(--border);margin:18px 0}
+
+/* ── 모달 / 시트 ── */
+.sheet-bg{
+  position:fixed;inset:0;
+  background:rgba(28,28,46,.5);
+  z-index:200;display:none;
+  align-items:flex-end;justify-content:center;
+}
+.sheet-bg.on{display:flex}
+.sheet{
+  background:var(--white);
+  border-radius:24px 24px 0 0;
+  padding:20px 20px calc(20px + var(--safe-bottom));
+  width:100%;max-width:540px;
+  max-height:85vh;overflow-y:auto;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{
+  width:36px;height:4px;
+  background:var(--border);border-radius:2px;
+  margin:0 auto 18px;
+}
+.sheet h2{font-size:17px;font-weight:700;margin-bottom:6px}
+.sheet p{font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.7}
+input[type="text"], input[type="password"]{
+  width:100%;background:var(--cream);
+  border:1.5px solid var(--border);border-radius:12px;
+  color:var(--ink);font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;padding:12px 14px;outline:none;
+  transition:border-color .15s;
+  -webkit-appearance:none;
+}
+input[type="text"]:focus, input[type="password"]:focus{
+  border-color:var(--blue);background:var(--white);
+}
+.input-row{margin-bottom:12px}
+.input-lbl{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px;display:block}
+
+/* 빈 상태 */
+.empty{text-align:center;padding:52px 0 32px;color:var(--ink3)}
+.empty-ico{font-size:44px;margin-bottom:14px;opacity:.6}
+.empty-title{font-size:15px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.empty-sub{font-size:13px;margin-bottom:20px;line-height:1.7}
+
+/* 설정 탭 */
+.setting-item{
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:14px;padding:14px 16px;
+  margin-bottom:10px;display:flex;
+  align-items:center;gap:12px;
+  cursor:pointer;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+  box-shadow:var(--shadow);
+}
+.setting-item:active{background:var(--blue-lt)}
+.setting-ico{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.setting-info{flex:1}
+.setting-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.setting-sub{font-size:12px;color:var(--ink3)}
+.setting-arrow{color:var(--ink3);font-size:16px}
+
+/* 토스트 */
+.toast{
+  position:fixed;bottom:calc(72px + var(--safe-bottom) + 12px);
+  left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:white;
+  padding:10px 20px;border-radius:24px;
+  font-size:13px;font-weight:600;
+  opacity:0;transition:all .3s;
+  z-index:300;white-space:nowrap;
+  pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 반응형 — 태블릿/PC */
+@media(min-width:600px){
+  .app{max-width:480px;margin:0 auto;border-left:1.5px solid var(--border);border-right:1.5px solid var(--border)}
+  .sheet{max-width:480px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 헤더 -->
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">M∑</div>
+      <div class="logo-txt">MathAI</div>
+    </div>
+    <div class="hdr-right">
+      <button class="profile-btn" id="profileBtn" onclick="openProfile()">?</button>
+    </div>
+  </div>
+
+  <!-- 스크롤 컨텐츠 -->
+  <div class="content">
+
+    <!-- 홈 탭 -->
+    <div id="home" class="page on">
+      <div class="home-greeting" id="homeGreeting">
+        <div class="greet-name" id="greetName">안녕하세요 👋</div>
+        <div class="greet-title" id="greetTitle">오늘도 수학 정복!</div>
+        <div class="greet-sub" id="greetSub">문제를 풀고 성취도를 분석해보세요</div>
+        <div class="mission-line" id="missionLine"><span id="missionTxt">오늘 <span class="mission-num" id="missionLeft">3</span>문제 남았어요</span></div>
+        <div class="today-stats">
+          <div class="tstat"><div class="tstat-v" id="hPred">5</div><div class="tstat-l">예상 등급</div></div>
+          <div class="tstat"><div class="tstat-v" id="hCnt">0</div><div class="tstat-l">오늘 푼 문제</div></div>
+          <div class="tstat"><div class="tstat-v" id="hAcc">—</div><div class="tstat-l">오늘 정답률</div></div>
+          <div class="tstat"><div class="tstat-v streak-ico" id="hStreak">🔥 0일째</div><div class="tstat-l">연속 학습</div></div>
+        </div>
+      </div>
+
+      <div class="grade-chart-card" id="gradeChartCard">
+        <div class="gchart-head">
+          <div>
+            <div class="gchart-title">매일 3문제 · 90일 후 예상 등급</div>
+            <div class="gchart-sub" id="gchartSub">현재 예상에서 목표까지 꾸준히 올라가요</div>
+          </div>
+        </div>
+        <div class="gchart-svg-wrap">
+          <span class="gchart-axis-lbl" style="left:0;top:4px">1등급</span>
+          <span class="gchart-axis-lbl" style="right:0;bottom:0">9등급</span>
+          <svg class="gchart-svg" id="gradeSvg" viewBox="0 0 320 150" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+        </div>
+        <div class="gchart-legend">
+          <span><i class="gchart-dot" style="background:var(--blue)"></i>예상 경로</span>
+          <span><i class="gchart-dot" style="background:var(--purple)"></i>목표 등급</span>
+        </div>
+      </div>
+
+      <div class="share-wrap">
+        <div class="slbl" style="margin-bottom:10px">학부모님께 공유</div>
+        <div class="share-card" id="shareCard">
+          <div class="share-brand">MathAI 학습 리포트</div>
+          <div class="share-name" id="shareName">학생 이름</div>
+          <div class="share-big-grade" id="shareGradeBig">5<span class="share-big-unit">등급</span></div>
+          <div style="font-size:12px;color:var(--ink3);font-weight:600">현재 예상 등급</div>
+          <div class="share-delta flat" id="shareDelta">어제와 동일해요</div>
+          <div class="share-streak" id="shareStreak">🔥 0일째 연속 학습</div>
+          <div class="share-foot">매일 3문제로 조금씩 등급이 올라가요 · MathAI</div>
+        </div>
+        <div class="share-btns">
+          <button type="button" class="btn btn-kakao" onclick="shareKakao()">카카오톡 공유</button>
+          <button type="button" class="btn btn-out" onclick="copyShareCard()">텍스트 복사</button>
+          <button type="button" class="btn btn-blue" onclick="saveShareCard()">카드 저장</button>
+        </div>
+      </div>
+
+      <div class="slbl">빠른 시작</div>
+      <div class="quick-btns">
+        <div class="qbtn highlight" onclick="sw('prob')">
+          <div class="qbtn-ico">✏️</div>
+          <div class="qbtn-title">문제 풀기</div>
+          <div class="qbtn-sub">쎈 스타일<br>AI 문제 생성</div>
+        </div>
+        <div class="qbtn" onclick="sw('up')">
+          <div class="qbtn-ico">📷</div>
+          <div class="qbtn-title">풀이 분석</div>
+          <div class="qbtn-sub">사진 찍어서<br>AI가 분석</div>
+        </div>
+      </div>
+
+      <div class="slbl">최근 학습 기록</div>
+      <div id="histList">
+        <div class="empty" style="padding:30px 0 20px">
+          <div class="empty-ico">📋</div>
+          <div class="empty-title">아직 기록이 없어요</div>
+          <div class="empty-sub">문제를 풀면<br>여기에 기록이 쌓여요</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문제 풀기 탭 -->
+    <div id="prob" class="page">
+
+      <div class="card">
+        <div class="field-row">
+          <label class="fld-lbl">학년</label>
+          <select id="grade">
+            <option value="중1">중학교 1학년</option>
+            <option value="중2" selected>중학교 2학년</option>
+            <option value="중3">중학교 3학년</option>
+            <option value="고1">고등학교 1학년</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label class="fld-lbl">단원</label>
+          <select id="unit">
+            <option value="집합의 뜻과 표현">집합의 뜻과 표현</option>
+            <option value="집합의 연산">집합의 연산</option>
+            <option value="명제">명제</option>
+            <option value="연립방정식" selected>연립방정식</option>
+            <option value="부등식">부등식</option>
+            <option value="함수">함수</option>
+            <option value="이차방정식">이차방정식</option>
+            <option value="인수분해">인수분해</option>
+          </select>
+        </div>
+        <div class="field-row" style="margin-bottom:6px">
+          <label class="fld-lbl">난이도</label>
+          <div class="lv-tabs">
+            <div class="lv-tab on" data-lv="기초" onclick="setLv(this)"><span>🌱</span>기초</div>
+            <div class="lv-tab" data-lv="기본" onclick="setLv(this)"><span>📘</span>기본</div>
+            <div class="lv-tab" data-lv="응용" onclick="setLv(this)"><span>🔥</span>응용</div>
+            <div class="lv-tab" data-lv="심화" onclick="setLv(this)"><span>⭐</span>심화</div>
+          </div>
+        </div>
+        <button class="btn btn-blue btn-full" id="genBtn" onclick="genP()">문제 생성하기</button>
+      </div>
+
+      <div id="pLoad" style="display:none;margin-bottom:12px">
+        <div class="ltxt" id="lMsg">문제 생성 중...</div>
+        <div class="lbar"><div class="lfill" id="lFill"></div></div>
+      </div>
+
+      <div id="pArea" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
+          <div class="slbl" style="margin:0" id="pAreaTitle">생성된 문제</div>
+          <button class="btn btn-out" style="padding:7px 14px;font-size:12px" onclick="showAll()">정답 모두 보기</button>
+        </div>
+        <div id="pList"></div>
+        <button class="btn btn-green btn-full" style="margin-top:4px" onclick="sw('up')">풀이 사진 분석하기 →</button>
+      </div>
+    </div>
+
+    <!-- 풀이 분석 탭 -->
+    <div id="up" class="page">
+
+      <div class="card">
+        <div style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.8">
+          손으로 푼 풀이를 <strong style="color:var(--ink)">사진으로 찍거나</strong> 갤러리에서 선택하세요.<br>
+          AI가 단계별로 분석해서 약점과 고등 성취도를 예측해요.
+        </div>
+
+        <div id="camArea">
+          <div class="cam-btns">
+            <div class="cam-btn" onclick="document.getElementById('fiCam').click()">
+              <div class="cam-btn-ico">📷</div>
+              <div class="cam-btn-lbl">카메라 촬영</div>
+              <div class="cam-btn-sub">지금 바로 찍기</div>
+            </div>
+            <div class="cam-btn" onclick="document.getElementById('fiGal').click()">
+              <div class="cam-btn-ico">🖼️</div>
+              <div class="cam-btn-lbl">갤러리 선택</div>
+              <div class="cam-btn-sub">저장된 사진</div>
+            </div>
+          </div>
+          <input type="file" id="fiCam" accept="image/*" capture="environment" style="display:none" onchange="onFile(this)">
+          <input type="file" id="fiGal" accept="image/*" style="display:none" onchange="onFile(this)">
+        </div>
+
+        <div id="prevArea" style="display:none">
+          <img id="prevImg" class="prev-img" src="" alt="">
+          <div style="margin-top:8px;font-size:12px;color:var(--ink3);text-align:center" id="fName"></div>
+          <button class="btn btn-out btn-full" style="margin-top:10px;font-size:13px" onclick="resetUp()">다른 사진 선택</button>
+        </div>
+
+        <div style="margin-top:14px">
+          <label class="fld-lbl">분석할 문제 (선택)</label>
+          <select id="pSel"><option value="g">일반 수학 풀이 분석</option></select>
+        </div>
+
+        <button class="btn btn-blue btn-full" id="anBtn" style="margin-top:14px" onclick="doAn()" disabled>AI 분석 시작</button>
+      </div>
+
+      <div id="anLoad" style="display:none;margin-top:4px">
+        <div class="ltxt" id="anMsg">분석 중...</div>
+        <div class="lbar"><div class="lfill" id="anFill"></div></div>
+      </div>
+    </div>
+
+    <!-- 리포트 탭 -->
+    <div id="rpt" class="page">
+      <div id="rEmpty" class="empty">
+        <div class="empty-ico">📊</div>
+        <div class="empty-title">아직 분석된 풀이가 없어요</div>
+        <div class="empty-sub">풀이 사진을 찍어서<br>AI 분석을 받아보세요</div>
+        <button class="btn btn-blue" onclick="sw('up')">풀이 분석하러 가기</button>
+      </div>
+      <div id="rContent" style="display:none">
+        <div class="rpt-hero">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div>
+              <div class="rpt-title">AI 풀이 분석 리포트</div>
+              <div class="rpt-sub" id="rSub">분석 완료</div>
+            </div>
+            <span style="background:rgba(255,255,255,.2);color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid rgba(255,255,255,.3);flex-shrink:0">수학</span>
+          </div>
+          <div class="rpt-stats">
+            <div class="rpt-stat"><div class="rpt-v" id="sLev">—</div><div class="rpt-l">현재 수준</div></div>
+            <div class="rpt-stat"><div class="rpt-v" id="sAc2">—</div><div class="rpt-l">풀이 정확도</div></div>
+            <div class="rpt-stat"><div class="rpt-v" id="sPr">—</div><div class="rpt-l">고1 예상</div></div>
+          </div>
+        </div>
+
+        <div class="slbl">상세 분석</div>
+        <div id="aItems"></div>
+
+        <div class="divider"></div>
+        <div class="slbl">고등학교 성취도 예측</div>
+        <div class="card">
+          <div id="pBars"></div>
+          <div style="margin-top:14px;padding:12px 14px;background:var(--blue-lt);border-radius:12px;border:1.5px solid var(--blue-md)">
+            <div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:4px">AI 예측 코멘트</div>
+            <div id="pCmt" style="font-size:13px;line-height:1.8;color:var(--ink)"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="slbl">다음 학습 추천</div>
+        <div id="nSteps"></div>
+
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn btn-blue" onclick="sw('prob')">새 문제 풀기</button>
+          <button class="btn btn-out" onclick="sw('up')">다른 풀이 분석</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 설정 탭 -->
+    <div id="set" class="page">
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--blue);font-family:'Nunito',sans-serif" id="setAvatar">?</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--ink)" id="setName">이름 미설정</div>
+            <div style="font-size:12px;color:var(--ink3)" id="setGradeDisp">학년 미설정</div>
+          </div>
+          <button class="btn btn-out" style="margin-left:auto;padding:8px 14px;font-size:12px" onclick="openProfile()">수정</button>
+        </div>
+      </div>
+
+      <div class="slbl">설정</div>
+
+      <div class="setting-item" onclick="clearHistory()">
+        <div class="setting-ico" style="background:var(--red-lt)">🗑️</div>
+        <div class="setting-info">
+          <div class="setting-title">학습 기록 초기화</div>
+          <div class="setting-sub">저장된 모든 기록을 삭제해요</div>
+        </div>
+        <div class="setting-arrow">›</div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="text-align:center;color:var(--ink3);font-size:12px;padding-bottom:8px">
+        MathAI v1.0 · 쇼앤프루프(주)<br>
+        <span style="font-size:11px">학생이 매일 쓰는 수학 AI</span>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- 하단 탭바 -->
+  <div class="bottom-nav">
+    <div class="bnav-item on" data-tab="home" onclick="sw('home')">
+      <div class="bnav-ico">🏠</div>
+      <div class="bnav-lbl">홈</div>
+    </div>
+    <div class="bnav-item" data-tab="prob" onclick="sw('prob')">
+      <div class="bnav-ico">✏️</div>
+      <div class="bnav-lbl">문제풀기</div>
+    </div>
+    <div class="bnav-item" data-tab="up" onclick="sw('up')">
+      <div class="bnav-ico">📷</div>
+      <div class="bnav-lbl">풀이분석</div>
+    </div>
+    <div class="bnav-item" data-tab="rpt" onclick="sw('rpt')">
+      <div class="bnav-ico">📊</div>
+      <div class="bnav-lbl">리포트</div>
+      <div class="bnav-dot" id="rptDot"></div>
+    </div>
+    <div class="bnav-item" data-tab="set" onclick="sw('set')">
+      <div class="bnav-ico">⚙️</div>
+      <div class="bnav-lbl">설정</div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- 프로필 시트 -->
+<div class="sheet-bg" id="profileSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>프로필 설정</h2>
+    <p>이름과 학년을 입력하면 맞춤형 학습을 시작할 수 있어요.</p>
+    <div class="input-row">
+      <label class="input-lbl">이름</label>
+      <input type="text" id="nameInp" placeholder="예: 김수학" maxlength="10">
+    </div>
+    <div class="input-row">
+      <label class="input-lbl">학년</label>
+      <select id="gradeInp">
+        <option value="중1">중학교 1학년</option>
+        <option value="중2" selected>중학교 2학년</option>
+        <option value="중3">중학교 3학년</option>
+        <option value="고1">고등학교 1학년</option>
+      </select>
+    </div>
+    <div class="input-row">
+      <label class="input-lbl">목표 등급 (1~9)</label>
+      <select id="targetGradeInp">
+        <option value="1">1등급 (최상)</option>
+        <option value="2" selected>2등급</option>
+        <option value="3">3등급</option>
+        <option value="4">4등급</option>
+        <option value="5">5등급</option>
+        <option value="6">6등급</option>
+        <option value="7">7등급</option>
+        <option value="8">8등급</option>
+        <option value="9">9등급</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-out" onclick="closeSheet('profileSheet')">취소</button>
+      <button class="btn btn-blue" onclick="saveProfile()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- API 키 시트 -->
+<div class="sheet-bg" id="apiSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2>API 키 설정</h2>
+    <p>Anthropic API 키를 입력하면 실제 AI가 문제를 생성하고 분석해요. 키는 이 기기에만 저장되며 외부로 전송되지 않아요.</p>
+    <div class="input-row">
+      <label class="input-lbl">Anthropic API Key</label>
+      <input type="password" id="apiInp" placeholder="sk-ant-..." style="font-family:monospace;font-size:13px">
+    </div>
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:14px">
+      console.anthropic.com에서 발급받을 수 있어요
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-out" onclick="closeSheet('apiSheet')">취소</button>
+      <button class="btn btn-blue" onclick="saveKey()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
+<script>
+// ── 상태 변수 ──
+var probs=[], imgB64=null, solved=0, correct=0, curLv='기초';
+var todaySolved=0, todayCorrect=0;
+var DAILY_MISSION=3;
+var GRADE_IMPROVE_STEP=0.055;
+
+// ── 초기화 ──
+(function init(){
+  loadProfile();
+  loadApiState();
+  initPredGrade();
+  loadTodayStats();
+  loadHistory();
+  renderGradeChart90();
+  updateShareCard();
+})();
+
+function loadProfile(){
+  var n=ls('mai_name')||'', g=ls('mai_grade')||'중2';
+  var tg=ls('mai_target_grade')||'2';
+  if(n){
+    document.getElementById('greetName').textContent=n+'님, 안녕하세요 👋';
+    document.getElementById('greetTitle').textContent='오늘도 수학 정복!';
+    document.getElementById('profileBtn').textContent=n[0];
+    document.getElementById('setName').textContent=n;
+    document.getElementById('setGradeDisp').textContent=g+' · 목표 '+tg+'등급';
+    document.getElementById('setAvatar').textContent=n[0];
+  } else {
+    document.getElementById('setGradeDisp').textContent=g+' · 목표 '+tg+'등급';
+  }
+  document.getElementById('nameInp').value=n;
+  document.getElementById('gradeInp').value=g;
+  if(document.getElementById('targetGradeInp')) document.getElementById('targetGradeInp').value=tg;
+}
+
+function loadApiState(){
+  var k=ls('mai_k')||'';
+  if(k){
+    document.getElementById('apiDot').classList.add('on');
+    document.getElementById('apiSubTxt').textContent='API 키 설정됨 ✓';
+  }
+}
+
+function loadTodayStats(){
+  var today=new Date().toDateString();
+  var d=lsj('mai_today')||{date:'',solved:0,correct:0};
+  if(d.date===today){todaySolved=d.solved;todayCorrect=d.correct;}
+  else{todaySolved=0;todayCorrect=0;}
+  updHomeStats();
+}
+
+function saveTodayStats(){
+  var today=new Date().toDateString();
+  ssj('mai_today',{date:today,solved:todaySolved,correct:todayCorrect});
+}
+
+function updHomeStats(){
+  document.getElementById('hCnt').textContent=todaySolved;
+  document.getElementById('hAcc').textContent=todaySolved?Math.round(todayCorrect/todaySolved*100)+'%':'—';
+  var streak=calcStreak();
+  document.getElementById('hStreak').textContent='🔥 '+streak+'일째';
+  syncDailyGradeHist();
+  var pg=fmtGradeNum(getPredGradeNum());
+  document.getElementById('hPred').textContent=pg;
+  var left=Math.max(0,DAILY_MISSION-todaySolved);
+  var ml=document.getElementById('missionLine');
+  var mt=document.getElementById('missionTxt');
+  if(left>0){
+    ml.classList.remove('done');
+    mt.innerHTML='오늘 <span class="mission-num" id="missionLeft">'+left+'</span>문제 남았어요';
+  }else{
+    ml.classList.add('done');
+    mt.textContent='오늘 미션 완료! 내일도 3문제 도전해요 🎉';
+  }
+  renderGradeChart90();
+  updateShareCard();
+}
+
+function initPredGrade(){
+  if(ls('mai_pred_grade')==null) sls('mai_pred_grade','5');
+}
+
+function getPredGradeNum(){
+  var v=parseFloat(ls('mai_pred_grade')||'5');
+  if(isNaN(v)) v=5;
+  return Math.max(1,Math.min(9,v));
+}
+
+function getTargetGradeNum(){
+  var t=parseInt(ls('mai_target_grade')||'2',10);
+  if(isNaN(t)) t=2;
+  return Math.max(1,Math.min(9,t));
+}
+
+function fmtGradeNum(g){
+  var r=Math.round(g*10)/10;
+  return(Math.round(r*10)%10===0)?String(Math.round(r)):r.toFixed(1);
+}
+
+function fmtGradeMain(g){
+  return fmtGradeNum(g);
+}
+
+function syncDailyGradeHist(){
+  var today=new Date().toDateString();
+  var hist=lsj('mai_grade_daily')||{};
+  hist[today]=getPredGradeNum();
+  ssj('mai_grade_daily',hist);
+}
+
+function getYesterdayGrade(){
+  var d=new Date();d.setDate(d.getDate()-1);
+  var hist=lsj('mai_grade_daily')||{};
+  var y=d.toDateString();
+  if(hist[y]==null) return null;
+  return hist[y];
+}
+
+function projectedGradeIn90Days(){
+  var cur=getPredGradeNum();
+  var tgt=getTargetGradeNum();
+  var raw=cur-GRADE_IMPROVE_STEP*90;
+  var end=Math.max(tgt,raw);
+  return Math.max(1,Math.min(9,end));
+}
+
+function renderGradeChart90(){
+  var svg=document.getElementById('gradeSvg');
+  if(!svg) return;
+  var cur=getPredGradeNum();
+  var tgt=getTargetGradeNum();
+  var end=projectedGradeIn90Days();
+  var sub=document.getElementById('gchartSub');
+  if(sub) sub.textContent='현재 '+fmtGradeNum(cur)+'등급 → 90일 후 약 '+fmtGradeNum(end)+'등급 · 목표 '+tgt+'등급';
+  var W=320,H=150,padL=34,padR=14,padT=14,padB=22;
+  var iw=W-padL-padR,ih=H-padT-padB;
+  function gy(g){return padT+((g-1)/8)*ih;}
+  var x0=padL,x1=padL+iw;
+  var yCur=gy(cur),yEnd=gy(end),yTgt=gy(tgt);
+  var pts=[],i,t,e,g,x,y;
+  for(i=0;i<=40;i++){
+    t=i/40;
+    e=1-Math.pow(1-t,2.2);
+    g=cur+(end-cur)*e;
+    x=padL+t*iw;
+    y=gy(g);
+    pts.push({x:x,y:y});
+  }
+  var dLine='M '+pts[0].x.toFixed(1)+','+pts[0].y.toFixed(1);
+  for(i=1;i<pts.length;i++) dLine+=' L '+pts[i].x.toFixed(1)+','+pts[i].y.toFixed(1);
+  var last=pts[pts.length-1];
+  var yBot=padT+ih;
+  var fillD=dLine+' L '+last.x.toFixed(1)+','+yBot+' L '+pts[0].x.toFixed(1)+','+yBot+' Z';
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=
+    '<defs><linearGradient id="gfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b5bfc" stop-opacity="0.18"/><stop offset="100%" stop-color="#7c3aed" stop-opacity="0.02"/></linearGradient></defs>'+
+    '<path d="'+fillD+'" fill="url(#gfill)" stroke="none"/>'+
+    '<line x1="'+x0+'" y1="'+yTgt+'" x2="'+x1+'" y2="'+yTgt+'" stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.85"/>'+
+    '<path d="'+dLine+'" fill="none" stroke="#3b5bfc" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="'+pts[0].x.toFixed(1)+'" cy="'+pts[0].y.toFixed(1)+'" r="5" fill="#fff" stroke="#3b5bfc" stroke-width="2"/>'+
+    '<circle cx="'+last.x.toFixed(1)+'" cy="'+last.y.toFixed(1)+'" r="5" fill="#fff" stroke="#3b5bfc" stroke-width="2"/>'+
+    '<text x="'+(padL-2)+'" y="'+(yCur+4)+'" font-size="9" font-weight="700" fill="#3b5bfc" font-family="Nunito,sans-serif">'+fmtGradeNum(cur)+'</text>'+
+    '<text x="'+(x1-18)+'" y="'+(yEnd+4)+'" font-size="9" font-weight="700" fill="#3b5bfc" font-family="Nunito,sans-serif">'+fmtGradeNum(end)+'</text>';
+}
+
+function gradeDeltaLabel(){
+  var y=getYesterdayGrade(), t=getPredGradeNum();
+  if(y==null) return {cls:'flat',text:'어제 기록이 없어요'};
+  var d=y-t;
+  var ad=Math.abs(Math.round(d*10)/10).toFixed(1);
+  if(d>0.04) return {cls:'up',text:'어제보다 약 '+ad+'등급 상승'};
+  if(d<-0.04) return {cls:'down',text:'어제보다 약 '+ad+'등급 하락'};
+  return {cls:'flat',text:'어제와 비슷해요'};
+}
+
+function updateShareCard(){
+  var name=ls('mai_name')||'학생';
+  var g=getPredGradeNum();
+  var main=fmtGradeMain(g);
+  var sn=document.getElementById('shareName');
+  var sb=document.getElementById('shareGradeBig');
+  var sd=document.getElementById('shareDelta');
+  var ss=document.getElementById('shareStreak');
+  if(sn) sn.textContent=name==='학생'?'학생':name;
+  if(sb) sb.innerHTML=main+'<span class="share-big-unit">등급</span>';
+  if(ss) ss.textContent='🔥 '+calcStreak()+'일째 연속 학습';
+  if(sd){
+    var o=gradeDeltaLabel();
+    sd.className='share-delta '+o.cls;
+    sd.textContent=o.text;
+  }
+}
+
+function buildShareText(){
+  var name=ls('mai_name')||'학생';
+  var g=fmtGradeMain(getPredGradeNum());
+  var o=gradeDeltaLabel().text;
+  var st=calcStreak();
+  return '[MathAI 학습 리포트]\n'+name+' · 현재 예상 '+g+'등급\n'+o+'\n🔥 '+st+'일째 연속 학습\n매일 3문제로 조금씩 등급이 올라가요.';
+}
+
+function copyShareToClipboard(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('복사했어요. 카카오톡에 붙여넣기 하세요'); });
+  }else{
+    toast(txt.length>80?txt.slice(0,80)+'…':txt);
+  }
+}
+
+function shareKakao(){
+  var t=buildShareText();
+  if(navigator.share){
+    navigator.share({title:'MathAI 학습 리포트',text:t}).catch(function(){ copyShareToClipboard(t); });
+  }else{
+    copyShareToClipboard(t);
+  }
+}
+
+function copyShareCard(){
+  copyShareToClipboard(buildShareText());
+}
+
+function saveShareCard(){
+  var card=document.getElementById('shareCard');
+  if(!card) return;
+  if(typeof html2canvas!=='function'){
+    toast('이 환경에서는 이미지 저장을 쓸 수 없어요');
+    return;
+  }
+  html2canvas(card,{scale:2,useCORS:true,backgroundColor:'#fdf8f2',logging:false}).then(function(canvas){
+    var a=document.createElement('a');
+    a.download='MathAI_학부모공유카드.png';
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+    toast('카드 이미지를 저장했어요');
+  }).catch(function(){ toast('저장에 실패했어요'); });
+}
+
+function applyMissionGradeBonus(){
+  var today=new Date().toDateString();
+  if(todaySolved<DAILY_MISSION) return false;
+  if(ls('mai_mission_bonus_date')===today) return false;
+  var g=getPredGradeNum();
+  var ng=g-GRADE_IMPROVE_STEP;
+  ng=Math.max(1,Math.min(9,ng));
+  sls('mai_pred_grade',ng.toFixed(2));
+  sls('mai_mission_bonus_date',today);
+  syncDailyGradeHist();
+  updHomeStats();
+  return true;
+}
+
+function calcStreak(){
+  var hist=lsj('mai_hist')||[];
+  if(!hist.length) return 0;
+  var days=new Set(hist.map(function(h){return new Date(h.ts).toDateString()}));
+  var streak=0,d=new Date();
+  for(var i=0;i<30;i++){
+    if(days.has(d.toDateString())){streak++;}
+    else if(i>0){break;}
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+
+function loadHistory(){
+  var hist=lsj('mai_hist')||[];
+  var el=document.getElementById('histList');
+  if(!hist.length){
+    el.innerHTML='<div class="empty" style="padding:30px 0 20px"><div class="empty-ico">📋</div><div class="empty-title">아직 기록이 없어요</div><div class="empty-sub">문제를 풀면<br>여기에 기록이 쌓여요</div></div>';
+    return;
+  }
+  var recent=hist.slice(-5).reverse();
+  el.innerHTML=recent.map(function(h){
+    var ico=h.type==='prob'?'✏️':'📷';
+    var bg=h.type==='prob'?'var(--blue-lt)':'var(--amber-lt)';
+    var acc=h.total?Math.round(h.correct/h.total*100):null;
+    var badgeTxt=acc!==null?acc+'%':h.grade||'';
+    var badgeColor=acc>=70?'var(--green)':acc>=50?'var(--blue)':'var(--amber)';
+    var dt=new Date(h.ts);
+    var dtStr=(dt.getMonth()+1)+'/'+dt.getDate()+' '+dt.getHours()+':'+String(dt.getMinutes()).padStart(2,'0');
+    return '<div class="hist-item">'+
+      '<div class="hist-ico" style="background:'+bg+'">'+ico+'</div>'+
+      '<div class="hist-info">'+
+        '<div class="hist-title">'+h.title+'</div>'+
+        '<div class="hist-meta">'+dtStr+'</div>'+
+      '</div>'+
+      (badgeTxt?'<div class="hist-badge" style="background:'+badgeColor+'18;color:'+badgeColor+';border:1.5px solid '+badgeColor+'33">'+badgeTxt+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+function addHist(item){
+  var hist=lsj('mai_hist')||[];
+  hist.push(Object.assign({ts:Date.now()},item));
+  if(hist.length>50) hist=hist.slice(-50);
+  ssj('mai_hist',hist);
+  loadHistory();
+}
+
+// ── 탭 전환 ──
+function sw(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.bnav-item').forEach(function(b){b.classList.remove('on')});
+  var pg=document.getElementById(id);
+  if(pg){pg.classList.add('on');pg.scrollTop=0;}
+  var nb=document.querySelector('.bnav-item[data-tab="'+id+'"]');
+  if(nb) nb.classList.add('on');
+  document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── 난이도 탭 ──
+function setLv(el){
+  document.querySelectorAll('.lv-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  curLv=el.getAttribute('data-lv');
+}
+
+// ── 프로필 ──
+function openProfile(){
+  loadProfile();
+  openSheet('profileSheet');
+}
+function saveProfile(){
+  var n=document.getElementById('nameInp').value.trim();
+  var g=document.getElementById('gradeInp').value;
+  var tg=document.getElementById('targetGradeInp').value;
+  if(!n){toast('이름을 입력해주세요');return;}
+  sls('mai_name',n);sls('mai_grade',g);sls('mai_target_grade',tg);
+  loadProfile();
+  closeSheet('profileSheet');
+  renderGradeChart90();
+  updateShareCard();
+  toast('프로필이 저장됐어요 ✓');
+}
+
+// ── API 키 ──
+function openApiSheet(){ document.getElementById('apiInp').value=ls('mai_k')||''; openSheet('apiSheet'); }
+function saveKey(){
+  var k=document.getElementById('apiInp').value.trim();
+  sls('mai_k',k);
+  loadApiState();
+  closeSheet('apiSheet');
+  toast(k?'API 키가 저장됐어요 ✓':'API 키가 삭제됐어요');
+}
+
+// ── 기록 초기화 ──
+function clearHistory(){
+  if(!confirm('모든 학습 기록을 삭제할까요?')) return;
+  localStorage.removeItem('mai_hist');
+  localStorage.removeItem('mai_today');
+  localStorage.removeItem('mai_pred_grade');
+  localStorage.removeItem('mai_grade_daily');
+  localStorage.removeItem('mai_mission_bonus_date');
+  todaySolved=0;todayCorrect=0;
+  initPredGrade();
+  updHomeStats();
+  loadHistory();
+  renderGradeChart90();
+  updateShareCard();
+  toast('기록이 초기화됐어요');
+}
+
+// ── 문제 생성 ──
+var lvMap={'기초':'A단계','기본':'B단계','응용':'B단계 심화','심화':'C단계'};
+
+async function genP(){
+  var g=document.getElementById('grade').value;
+  var u=document.getElementById('unit').value;
+  var l=curLv;
+  var ls2=lvMap[l]||l;
+  document.getElementById('pArea').style.display='none';
+  document.getElementById('pLoad').style.display='block';
+  document.getElementById('genBtn').disabled=true;
+  anim('lFill','lMsg',['교육과정 기준 확인 중...','쎈 문제 패턴 분석 중...','문제 생성 중...','난이도 검수 중...']);
+  var prompt='너는 쎈 수학 문제집과 100% 동일한 어투로 문제를 생성하는 AI야.\n\n[쎈 어투 절대 규칙]\n1. 문장 종결: 항상 "~시오" 형태. "~하여라" "~하세요" 절대 금지\n2. 집합 판단형: "다음 중 집합인 것은?"\n3. 원소 확인형: "□ 안에 기호 ∈, ∉ 중 알맞은 것을 써넣으시오."\n4. 참거짓형: "다음 중 옳은 것은?" / "옳지 않은 것은?"\n5. 보기형: "옳은 것만을 보기에서 있는 대로 고른 것은?"\n6. 개수 서술형: "~의 개수를 구하시오." / 개수 객관식: "~의 개수는?"\n7. 조건형: "두 집합 A, B에 대하여 ~일 때, ~를 구하시오."\n8. 객관식: 반드시 5지선다 ①②③④⑤\n9. C단계: (가)(나) 조건 박스 형식\n10. 금지: "구하여라" "하여라" "몇 개인지 구하시오" "올바른"\n\n'+g+' 수학 '+u+' 단원 '+ls2+' 수준 문제 4개를 쎈 어투 그대로 만들어줘.\n\n출력 형식:\n[문제1]\n0001 (문제 내용)\n[정답] (정답)\n\n[문제2]\n0002 (문제 내용)\n[정답] (정답)\n\n[문제3]\n0003 (문제 내용)\n[정답] (정답)\n\n[문제4]\n0004 (문제 내용)\n[정답] (정답)';
+  try{
+    var res=await callC(prompt);
+    probs=res?parseP(res,g,u,l):demoP(u,l);
+  }catch(e){ probs=demoP(u,l); }
+  solved=0;correct=0;
+  rendP(probs); updSel(probs);
+  document.getElementById('pLoad').style.display='none';
+  document.getElementById('pAreaTitle').textContent=u+' · '+ls2;
+  document.getElementById('pArea').style.display='block';
+  document.getElementById('genBtn').disabled=false;
+  // 히스토리 저장
+  addHist({type:'prob',title:u+' '+ls2+' 문제 4개',unit:u,level:l,total:0,correct:0});
+}
+
+function parseP(txt,g,u,l){
+  var arr=[],parts=txt.split(/\[문제\d+\]/);
+  parts.forEach(function(p,i){
+    var t=p.trim(); if(!t) return;
+    var ans='',body=t;
+    var am=t.match(/\[정답\]\s*(.+)/s);
+    if(am){ans=am[1].trim();body=t.replace(/\[정답\][\s\S]*/,'').trim();}
+    arr.push({num:String(i).padStart(4,'0'),u:u,l:l,body:body,ans:ans});
+  });
+  return arr.length?arr:demoP(u,l);
+}
+
+function demoP(u,l){
+  return[
+    {num:'0001',u:u,l:l,body:'다음 중 집합인 것은?\n① 훌륭한 예술가의 모임\n② 10에 가까운 수의 모임\n③ 소수의 모임\n④ 작은 수의 모임\n⑤ 교복이 잘 어울리는 학생들의 모임',ans:'③'},
+    {num:'0002',u:u,l:l,body:'방정식 x²+2x−3=0의 해의 집합을 A라 할 때,\n다음 중 옳은 것은?\n① 0∈A　② 1∈A　③ 2∈A\n④ −1∉A　⑤ 3∈A',ans:'②'},
+    {num:'0003',u:u,l:l,body:'집합 A={1, 2, 3, 4, 5}의 부분집합 중\n원소의 개수가 2인 것의 개수를 구하시오.',ans:'10'},
+    {num:'0004',u:u,l:l,body:'두 집합 A, B에 대하여 A⊂B이고\nn(A)=3, n(B)=5일 때,\nn(A∪B)를 구하시오.',ans:'5'}
+  ];
+}
+
+var lvBdg={'기초':'bdg-a','기본':'bdg-b','응용':'bdg-b','심화':'bdg-c'};
+function rendP(ps){
+  document.getElementById('pList').innerHTML=ps.map(function(p,i){
+    var bc=lvBdg[p.l]||'bdg-b';
+    return '<div class="pcard" id="pc'+i+'">'+
+      '<div class="pcard-top">'+
+        '<span class="pnum">'+p.num+'</span>'+
+        '<span class="bdg '+bc+'">'+p.l+'</span>'+
+        '<span class="bdg bdg-unit" style="margin-left:auto">'+p.u+'</span>'+
+      '</div>'+
+      '<div class="pbody">'+esc(p.body)+'</div>'+
+      '<div class="pans" id="an'+i+'">✓ 정답: '+esc(p.ans)+'</div>'+
+      '<div class="pbtns">'+
+        '<button class="btn btn-check" onclick="togAns('+i+')">정답 확인</button>'+
+        '<button class="btn btn-ok" onclick="mark('+i+',true)">맞음 ✓</button>'+
+        '<button class="btn btn-no" onclick="mark('+i+',false)">틀림 ✗</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function togAns(i){ document.getElementById('an'+i).classList.toggle('show'); }
+function showAll(){ probs.forEach(function(_,i){ document.getElementById('an'+i).classList.add('show'); }); }
+function mark(i,ok){
+  var c=document.getElementById('pc'+i);
+  if(c.dataset.marked) return;
+  c.dataset.marked='1';
+  c.classList.remove('ok','wrong');
+  c.classList.add(ok?'ok':'wrong');
+  solved++;todaySolved++;
+  if(ok){correct++;todayCorrect++;}
+  saveTodayStats();updHomeStats();
+  var bonus=todaySolved===DAILY_MISSION&&applyMissionGradeBonus();
+  if(bonus) toast((ok?'정답! ':'')+'오늘 3문제 달성 · 예상 등급이 조금 올랐어요 📈');
+  else toast(ok?'정답! 🎉':'오답 — 다시 확인해보세요');
+}
+
+function updSel(ps){
+  var s=document.getElementById('pSel');
+  s.innerHTML='<option value="g">일반 수학 풀이 분석</option>';
+  ps.forEach(function(p,i){s.innerHTML+='<option value="'+i+'">'+(i+1)+'번: '+p.body.substring(0,18)+'...</option>';});
+}
+
+// ── 풀이 분석 ──
+function onFile(inp){ if(inp.files&&inp.files[0]) procF(inp.files[0]); }
+function procF(f){
+  var r=new FileReader();
+  r.onload=function(e){
+    imgB64=e.target.result.split(',')[1];
+    document.getElementById('prevImg').src=e.target.result;
+    document.getElementById('fName').textContent=f.name;
+    document.getElementById('camArea').style.display='none';
+    document.getElementById('prevArea').style.display='block';
+    document.getElementById('anBtn').disabled=false;
+  };
+  r.readAsDataURL(f);
+}
+function resetUp(){
+  imgB64=null;
+  document.getElementById('prevArea').style.display='none';
+  document.getElementById('camArea').style.display='block';
+  document.getElementById('anBtn').disabled=true;
+  document.getElementById('fiCam').value='';
+  document.getElementById('fiGal').value='';
+}
+
+async function doAn(){
+  var pi=document.getElementById('pSel').value;
+  var pc=pi!=='g'&&probs[parseInt(pi)]?'\n\n분석할 문제:\n'+probs[parseInt(pi)].body:'';
+  document.getElementById('anLoad').style.display='block';
+  document.getElementById('anBtn').disabled=true;
+  anim('anFill','anMsg',['이미지 인식 중...','풀이 과정 분석 중...','약점 패턴 파악 중...','성취도 예측 중...','리포트 생성 중...']);
+  var prompt='중학생 수학 풀이 이미지를 분석해줘.'+pc+'\n\nJSON만 응답:\n{"currentLevel":"현재수준","accuracy":"숫자만","grade1Predict":"예:4등급","strengths":["강점1","강점2"],"weaknesses":["약점1","약점2","약점3"],"mistakePattern":"실수패턴","conceptGap":"개념공백","predictScore":{"중3말":숫자,"고1중간":숫자,"고1기말":숫자},"predictComment":"예측2문장","nextSteps":[{"title":"제목","desc":"설명","priority":"high"},{"title":"제목","desc":"설명","priority":"mid"},{"title":"제목","desc":"설명","priority":"low"}]}';
+  try{
+    var res=null;
+    if(imgB64) res=await callCI(prompt,imgB64);
+    var d=res?JSON.parse(res.replace(/```json|```/g,'').trim()):demoR();
+    rendR(d);
+    addHist({type:'analysis',title:'풀이 AI 분석',grade:d.grade1Predict,level:d.currentLevel});
+    document.getElementById('rptDot').classList.add('show');
+  }catch(e){ var d=demoR(); rendR(d); }
+  document.getElementById('anLoad').style.display='none';
+  document.getElementById('anBtn').disabled=false;
+  sw('rpt');
+}
+
+function demoR(){
+  return{currentLevel:'중2 기본~응용',accuracy:'68',grade1Predict:'4등급',
+    strengths:['식 세우기 능력','기본 연산 처리'],
+    weaknesses:['부호 처리 오류 반복','검산 습관 부재','문장제 해석 속도'],
+    mistakePattern:'이항 시 부호를 반대로 적용하는 실수가 3회 반복됨.',
+    conceptGap:'등식의 성질을 암기는 했지만 이항 적용 시 혼동함.',
+    predictScore:{'중3말':62,'고1중간':55,'고1기말':68},
+    predictComment:'지금 속도로 학습하면 고1에서 4등급 내외가 예상됩니다. 부호 처리 오류를 교정하면 2~3등급 상승이 충분히 가능합니다.',
+    nextSteps:[
+      {title:'부호 규칙 집중 훈련',desc:'이항 시 부호 변환을 10문제씩 매일 반복. 틀리면 이유 직접 설명.',priority:'high'},
+      {title:'검산 루틴 만들기',desc:'풀이 후 원래 식에 대입 확인 습관화.',priority:'high'},
+      {title:'문장제 독해 연습',desc:'조건을 표로 정리 후 식 세우기.',priority:'mid'}
+    ]};
+}
+
+function rendR(d){
+  document.getElementById('rSub').textContent=new Date().toLocaleDateString('ko-KR')+' · AI 분석 완료';
+  document.getElementById('sLev').textContent=d.currentLevel||'—';
+  document.getElementById('sAc2').textContent=(d.accuracy||'—')+'%';
+  document.getElementById('sPr').textContent=d.grade1Predict||'—';
+  var it='';
+  if(d.strengths&&d.strengths.length) it+='<div class="aitem"><div class="aico" style="background:var(--green-lt)">✅</div><div><div class="atit" style="color:#065f46">강점</div><div class="adesc">'+d.strengths.join(', ')+'</div></div></div>';
+  if(d.weaknesses&&d.weaknesses.length) it+='<div class="aitem"><div class="aico" style="background:var(--red-lt)">⚠️</div><div><div class="atit" style="color:#991b1b">약점</div><div class="adesc">'+d.weaknesses.join(', ')+'</div></div></div>';
+  if(d.mistakePattern) it+='<div class="aitem"><div class="aico" style="background:var(--amber-lt)">🔄</div><div><div class="atit" style="color:#92400e">반복 실수 패턴</div><div class="adesc">'+d.mistakePattern+'</div></div></div>';
+  if(d.conceptGap) it+='<div class="aitem"><div class="aico" style="background:var(--purple-lt)">📚</div><div><div class="atit" style="color:#5b21b6">개념 공백</div><div class="adesc">'+d.conceptGap+'</div></div></div>';
+  document.getElementById('aItems').innerHTML=it;
+  var bs='',sc=d.predictScore||{},lb={'중3말':'중3 기말','고1중간':'고1 중간','고1기말':'고1 기말'};
+  Object.keys(sc).forEach(function(k){
+    var v=sc[k];
+    var bc=v>=70?'#16c784':v>=55?'#3b5bfc':v>=40?'#ffb020':'#ff5c5c';
+    bs+='<div class="pb-wrap"><div class="pb-lbl"><span>'+(lb[k]||k)+'</span><span style="color:'+bc+'">'+v+'점</span></div><div class="pb-bar"><div class="pb-fill" style="width:'+v+'%;background:'+bc+'"></div></div></div>';
+  });
+  document.getElementById('pBars').innerHTML=bs;
+  document.getElementById('pCmt').textContent=d.predictComment||'';
+  var ns='';
+  if(d.nextSteps) d.nextSteps.forEach(function(s){
+    var pc={'high':'#ff5c5c','mid':'#ffb020','low':'#16c784'}[s.priority]||'#3b5bfc';
+    var pl={'high':'긴급','mid':'권장','low':'선택'}[s.priority]||'';
+    ns+='<div class="aitem"><div class="aico" style="background:var(--cream)">📌</div><div><div class="atit">'+s.title+' <span style="font-size:10px;color:'+pc+';background:'+pc+'18;padding:2px 7px;border-radius:5px;font-weight:700">'+pl+'</span></div><div class="adesc">'+s.desc+'</div></div></div>';
+  });
+  document.getElementById('nSteps').innerHTML=ns;
+  document.getElementById('rEmpty').style.display='none';
+  document.getElementById('rContent').style.display='block';
+}
+
+// ── API 호출 (Cloudflare Worker 경유) ──
+var WORKER_URL='https://mathai-proxy.chang-son.workers.dev';
+
+async function callC(p){
+  var r=await fetch(WORKER_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:p}]})
+  });
+  if(!r.ok) throw new Error(r.status);
+  return (await r.json()).content[0].text;
+}
+async function callCI(p,b64){
+  var r=await fetch(WORKER_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:p}]}]})
+  });
+  if(!r.ok) throw new Error(r.status);
+  return (await r.json()).content[0].text;
+}
+
+// ── 애니메이션 ──
+function anim(fId,mId,msgs){
+  var f=document.getElementById(fId),m=document.getElementById(mId),i=0,w=0;
+  var iv=setInterval(function(){
+    w=Math.min(w+13,90);f.style.width=w+'%';
+    if(i<msgs.length){m.textContent=msgs[i];i++;}
+  },500);
+  setTimeout(function(){clearInterval(iv);f.style.width='100%';},msgs.length*500+800);
+}
+
+// ── 시트 ──
+function openSheet(id){
+  document.getElementById(id).classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(id){
+  document.getElementById(id).classList.remove('on');
+  document.body.style.overflow='';
+}
+document.querySelectorAll('.sheet-bg').forEach(function(bg){
+  bg.addEventListener('click',function(e){if(e.target===this) closeSheet(this.id);});
+});
+
+// ── 토스트 ──
+var toastTm;
+function toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTm);
+  toastTm=setTimeout(function(){el.classList.remove('show');},2200);
+}
+
+// ── localStorage 헬퍼 ──
+function ls(k){return localStorage.getItem(k);}
+function sls(k,v){localStorage.setItem(k,v);}
+function lsj(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+function ssj(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+// ── 유틸 ──
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+</script>
+</body>
+</html>
